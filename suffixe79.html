@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suffix-Auswahl: -ИН- oder -ЫН-?</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 20px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .task-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .task-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sentence {
+            font-size: 1.2em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 2px solid #ccc;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        /* Status-Farben */
+        .correct {
+            border-color: var(--success-color) !important;
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        .incorrect {
+            border-color: var(--error-color) !important;
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button:hover { opacity: 0.8; }
+
+        .word-origin {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        @media (min-width: 768px) {
+            .task-list {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence { font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Suffix-Wahl: -ИН- oder -ЫН-?</h2>
+
+    <div class="instruction-box">
+        <strong>Regel:</strong> 
+        Wählen Sie das richtige Suffix für das Possessivadjektiv.
+        <ul>
+            <li><strong>-ИН-</strong>: Nach den meisten Konsonanten und Vokalen (z. B. <em>мамин, папин</em>).</li>
+            <li><strong>-ЫН-</strong>: Fast nur nach dem Buchstaben <strong>ц</strong> (z. B. <em>лисицын, курицын</em>).</li>
+        </ul>
+        <em>Keine Tastatur erforderlich – wählen Sie einfach aus dem Menü!</em>
+    </div>
+
+    <div id="quiz-container" class="task-list"></div>
+</div>
+
+<script>
+const tasks = [
+    { id: 1, origin: "Ира", part1: "Это", part2: "журнал.", options: ["Ирин", "Ирын"], correct: "Ирин" },
+    { id: 2, origin: "лисица", part1: "Это", part2: "хвост.", options: ["лисицин", "лисицын"], correct: "лисицын" },
+    { id: 3, origin: "мама", part1: "Это", part2: "дом.", options: ["мамин", "мамын"], correct: "мамин" },
+    { id: 4, origin: "курица", part1: "Это", part2: "яйцо.", options: ["курицин", "курицын"], correct: "курицын" },
+    { id: 5, origin: "папа", part1: "Это", part2: "машина.", options: ["папин", "папын"], correct: "папин" },
+    { id: 6, origin: "сестрица", part1: "Это", part2: "платок.", options: ["сестрицин", "сестрицын"], correct: "сестрицын" },
+    { id: 7, origin: "Катя", part1: "Это", part2: "кукла.", options: ["Катин", "Катын"], correct: "Катин" },
+    { id: 8, origin: "синица", part1: "Это", part2: "гнездо.", options: ["синицин", "синицын"], correct: "синицын" },
+    { id: 9, origin: "дядя", part1: "Это", part2: "газета.", options: ["дядин", "дядын"], correct: "дядин" },
+    { id: 10, origin: "тётя", part1: "Это", part2: "сумка.", options: ["тётин", "тётын"], correct: "тётин" },
+    { id: 11, origin: "пророчица", part1: "Это", part2: "слово.", options: ["пророчицин", "пророчицын"], correct: "пророчицын" },
+    { id: 12, origin: "Ваня", part1: "Это", part2: "собака.", options: ["Ванин", "Ванын"], correct: "Ванин" },
+    { id: 13, origin: "царица", part1: "Это", part2: "сын.", options: ["царицин", "царицын"], correct: "царицын" },
+    { id: 14, origin: "Таня", part1: "Это", part2: "ручка.", options: ["Танин", "Танын"], correct: "Танин" },
+    { id: 15, origin: "мастерица", part1: "Это", part2: "работа.", options: ["мастерицин", "мастерицын"], correct: "мастерицын" },
+    { id: 16, origin: "Миша", part1: "Это", part2: "друг.", options: ["Мишин", "Мишын"], correct: "Мишин" },
+    { id: 17, origin: "племянница", part1: "Это", part2: "игрушка.", options: ["племянницин", "племянницын"], correct: "племянницын" },
+    { id: 18, origin: "Саша", part1: "Это", part2: "тетрадь.", options: ["Сашин", "Сашын"], correct: "Сашин" },
+    { id: 19, origin: "тигрица", part1: "Это", part2: "рык.", options: ["тигрицин", "тигрицын"], correct: "тигрицын" },
+    { id: 20, origin: "бабушка", part1: "Это", part2: "пирог.", options: ["бабушкин", "бабушкын"], correct: "бабушкин" }
+];
+
+function renderTasks() {
+    const container = document.getElementById('quiz-container');
+    tasks.forEach(task => {
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        card.innerHTML = `
+            <div class="word-origin">Basiswort: „${task.origin}“</div>
+            <div class="sentence">
+                ${task.part1} 
+                <select id="select-${task.id}" onchange="validateTask(${task.id})">
+                    <option value="">-- ? --</option>
+                    ${task.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                </select>
+                ${task.part2}
+            </div>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetTask(${task.id})">Zurücksetzen</button>
+                <button class="btn-solution" onclick="showSolution(${task.id})">Lösung</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function validateTask(taskId) {
+    const select = document.getElementById(`select-${taskId}`);
+    const task = tasks.find(t => t.id === taskId);
+    const value = select.value;
+
+    if (value === "") {
+        select.className = "";
+        return;
+    }
+
+    if (value === task.correct) {
+        select.className = "correct";
+    } else {
+        select.className = "incorrect";
+    }
+}
+
+function resetTask(taskId) {
+    const select = document.getElementById(`select-${taskId}`);
+    select.value = "";
+    select.className = "";
+}
+
+function showSolution(taskId) {
+    const select = document.getElementById(`select-${taskId}`);
+    const task = tasks.find(t => t.id === taskId);
+    select.value = task.correct;
+    select.className = "correct";
+}
+
+window.onload = renderTasks;
+</script>
+
+</body>
+</html>
