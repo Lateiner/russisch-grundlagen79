@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Russische Grammatik: Possessivadjektive -ИН- / -ЫН-</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .intro-box {
+            background: #ffffff;
+            padding: 20px;
+            border: 2px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .task-card {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            background: #ffffff;
+            transition: transform 0.2s;
+        }
+
+        .task-title {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .sentence-row {
+            font-size: 1.1em;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        select, .drop-zone {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 2px solid #ced4da;
+            font-size: 1rem;
+            background-color: #fff;
+            transition: all 0.3s;
+            min-width: 140px;
+        }
+
+        .drop-zone {
+            display: inline-block;
+            min-height: 24px;
+            text-align: center;
+            border-style: dashed;
+            vertical-align: middle;
+        }
+
+        .drag-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .drag-item {
+            padding: 6px 12px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-reset { background-color: #6c757d; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+        button:hover { opacity: 0.9; }
+
+        /* Status-Farben */
+        .correct { 
+            border-color: var(--success-color) !important; 
+            background-color: #d4edda !important; 
+            color: #155724 !important;
+        }
+        .incorrect { 
+            border-color: var(--error-color) !important; 
+            background-color: #f8d7da !important; 
+            color: #721c24 !important;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence-row { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russische Grammatik</h1>
+    <h2>Deklination von Possessivadjektiven (-ИН- / -ЫН-)</h2>
+
+    <div class="intro-box">
+        <h3>Einführung</h3>
+        <p>Possessivadjektive werden von Substantiven (meist Personen) abgeleitet. Sie enden im Nominativ Maskulin auf -ин oder -ын.</p>
+        <p>Wichtige Merkmale:</p>
+        <ul>
+            <li>Weiblich Akkusativ endet auf -у (z.B. мамину), nicht auf -ую.</li>
+            <li>Nachnamen (Курицын, Пушкин) enden im Präpositiv Maskulin auf -е und im Instrumental auf -ым.</li>
+            <li>Ortsnamen auf -о (Курицыно) werden im Präpositiv zu -е (в Курицыне).</li>
+        </ul>
+        <p>Beispiel: „Это мамина книга. Я вижу мамину книгу.“</p>
+    </div>
+
+    <div id="exercise-list"></div>
+</div>
+
+<script>
+const tasks = [
+    { id: 1, title: "Nominativ Feminin: „Das ist Mutters Tasche.“", type: "dropdown", sentence: "Это [ANS] сумка.", options: ["мамин", "мамина", "мамино"], correct: "мамина" },
+    { id: 2, title: "Akkusativ Feminin: „Ich sehe Mutters Tasche.“", type: "dropdown", sentence: "Я вижу [ANS] сумku.", options: ["мамину", "маминую", "маминой"], correct: "мамину" },
+    { id: 3, title: "Genitiv Maskulin: „Hier ist kein Telefon von Papa.“", type: "dropdown", sentence: "Здесь нет [ANS] телефона.", options: ["папин", "папиного", "папиному"], correct: "папиного" },
+    { id: 4, title: "Präpositiv (Nachname): „Wir sprechen über Puschkin.“", type: "dropdown", sentence: "Мы говорим о [ANS].", options: ["Пушкином", "Пушкине", "Пушкина"], correct: "Пушкине" },
+    { id: 5, title: "Dativ Neutrum: „Ich gehe zu Mutters Kleid.“", type: "dropdown", sentence: "Я подхожу к [ANS] платью.", options: ["маминому", "маминой", "маминым"], correct: "маминому" },
+    { id: 6, title: "Instrumental Maskulin (Nachname): „Ich sitze neben Kurizyn.“", type: "dropdown", sentence: "Я сижу с [ANS].", options: ["Курицыном", "Курицыным", "Курицыне"], correct: "Курицыным" },
+    { id: 7, title: "Plural Nominativ: „Das sind Mutters Sachen.“", type: "dropdown", sentence: "Это [ANS] вещи.", options: ["мамин", "мамины", "маминых"], correct: "мамины" },
+    { id: 8, title: "Ortsname Präpositiv: „In Kurizyno ist es schön.“", type: "dropdown", sentence: "В [ANS] красиво.", options: ["Курицыно", "Курицыне", "Курицыном"], correct: "Курицыне" },
+    { id: 9, title: "Akkusativ Maskulin (belebt): „Ich liebe Mutters Bruder.“", type: "dropdown", sentence: "Я люблю [ANS] брата.", options: ["мамин", "маминого", "маминому"], correct: "маминого" },
+    { id: 10, title: "Akkusativ Maskulin (unbelebt): „Ich lese Vaters Brief.“", type: "dropdown", sentence: "Я читаю [ANS] письмо. (Fehler: Brief=Neutrum!) -> Ich lese [ANS] текст.", sentence: "Я читаю [ANS] текст.", options: ["папин", "папиного", "папиным"], correct: "папин" },
+    { id: 11, title: "Genitiv Feminin: „Das ist das Ende von Omas Märchen.“", type: "dropdown", sentence: "Это конец [ANS] сказки.", options: ["бабушкину", "бабушкиной", "бабушкина"], correct: "бабушкиной" },
+    { id: 12, title: "Dativ Feminin: „Ich schreibe Mutters Schwester.“", type: "dropdown", sentence: "Я пишу [ANS] сестре.", options: ["мамину", "маминой", "мамина"], correct: "маминой" },
+    { id: 13, title: "Instrumental Feminin: „Ich bin stolz auf Mutters Arbeit.“", type: "dropdown", sentence: "Я горжусь [ANS] работой.", options: ["маминой", "мамину", "мамино"], correct: "маминой" },
+    { id: 14, title: "Plural Genitiv: „Ich habe keine Brillen von Papa.“", type: "dropdown", sentence: "У меня нет [ANS] очков.", options: ["папины", "папиных", "папиным"], correct: "папиных" },
+    { id: 15, title: "Plural Dativ: „Ich helfe Mutters Freunden.“", type: "dropdown", sentence: "Я помогаю [ANS] друзьям.", options: ["маминых", "маминым", "мамиными"], correct: "маминым" },
+    { id: 16, title: "Plural Akkusativ (belebt): „Ich kenne Mutters Eltern.“", type: "dropdown", sentence: "Я знаю [ANS] родителей.", options: ["мамины", "маминых", "маминым"], correct: "маминых" },
+    { id: 17, title: "Plural Präpositiv: „Wir denken an Omas Briefe.“", type: "dropdown", sentence: "Мы думаем о [ANS] письмах.", options: ["бабушкиных", "бабушкиным", "бабушкиными"], correct: "бабушкиных" },
+    { id: 18, title: "Drag & Drop: „Vaters Computer“", type: "drag", sentence: "Это [ZONE] компьютер.", items: ["папин", "папина", "папино"], correct: "папин" },
+    { id: 19, title: "Drag & Drop: „Mutters Foto“", type: "drag", sentence: "Это [ZONE] фото.", items: ["мамин", "мамина", "мамино"], correct: "мамино" },
+    { id: 20, title: "Drag & Drop: „In Vaters Auto“", type: "drag", sentence: "В [ZONE] машине.", items: ["папину", "папиной", "папина"], correct: "папиной" }
+];
+
+function render() {
+    const list = document.getElementById('exercise-list');
+    tasks.forEach(t => {
+        const div = document.createElement('div');
+        div.className = 'task-card';
+        let html = `<span class="task-title">${t.id}. ${t.title}</span>`;
+        
+        if(t.type === 'dropdown') {
+            const parts = t.sentence.split('[ANS]');
+            html += `<div class="sentence-row">${parts[0]} 
+                <select id="in-${t.id}" onchange="validate(${t.id}, this.value)">
+                <option value="">--?--</option>
+                ${t.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                </select> ${parts[1]}</div>`;
+        } else {
+            const parts = t.sentence.split('[ZONE]');
+            html += `
+                <div class="drag-container">
+                    ${t.items.map(i => `<div class="drag-item" draggable="true" ondragstart="drag(event)" id="drag-${t.id}-${i}">${i}</div>`).join('')}
+                </div>
+                <div class="sentence-row">${parts[0]} 
+                <div class="drop-zone" id="in-${t.id}" ondrop="drop(event, ${t.id})" ondragover="allowDrop(event)"></div> 
+                ${parts[1]}</div>`;
+        }
+
+        html += `<div class="button-group">
+            <button class="btn-reset" onclick="reset(${t.id})">Zurücksetzen</button>
+            <button class="btn-solution" onclick="showSol(${t.id})">Lösung anzeigen</button>
+        </div>`;
+        div.innerHTML = html;
+        list.appendChild(div);
+    });
+}
+
+function validate(id, val) {
+    const el = document.getElementById(`in-${id}`);
+    const correct = tasks.find(t => t.id === id).correct;
+    if(!val) { el.className = (el.tagName === 'SELECT' ? '' : 'drop-zone'); return; }
+    
+    if(val === correct) {
+        el.classList.add('correct');
+        el.classList.remove('incorrect');
+    } else {
+        el.classList.add('incorrect');
+        el.classList.remove('correct');
+    }
+}
+
+function allowDrop(ev) { ev.preventDefault(); }
+function drag(ev) { ev.dataTransfer.setData("text", ev.target.innerText); }
+function drop(ev, id) {
+    ev.preventDefault();
+    const data = ev.dataTransfer.getData("text");
+    ev.target.innerText = data;
+    validate(id, data);
+}
+
+function reset(id) {
+    const el = document.getElementById(`in-${id}`);
+    const t = tasks.find(x => x.id === id);
+    if(t.type === 'dropdown') {
+        el.value = "";
+        el.className = "";
+    } else {
+        el.innerText = "";
+        el.className = "drop-zone";
+    }
+}
+
+function showSol(id) {
+    const el = document.getElementById(`in-${id}`);
+    const t = tasks.find(x => x.id === id);
+    if(t.type === 'dropdown') {
+        el.value = t.correct;
+    } else {
+        el.innerText = t.correct;
+    }
+    validate(id, t.correct);
+}
+
+window.onload = render;
+</script>
+
+</body>
+</html>
