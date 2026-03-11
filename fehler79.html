@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fehlersuche: Possessivadjektive -ИН-/-ЫН-</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 20px;
+            border-left: 5px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+
+        .task-card {
+            border: 1px solid #ddd;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sentence {
+            font-size: 1.25em;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .word {
+            padding: 2px 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            border-bottom: 2px dashed #ccc;
+            transition: all 0.3s ease;
+        }
+
+        .word:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Status-Styles */
+        .word.error-found {
+            background-color: var(--success-color) !important;
+            color: white !important;
+            border-bottom-color: transparent !important;
+            cursor: default;
+        }
+
+        .word.wrong-click {
+            animation: shake 0.4s ease;
+            background-color: #f8d7da;
+            border-bottom-color: var(--error-color);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+
+        .btn-reset { background-color: #95a5a6; color: white; }
+        .btn-solution { background-color: var(--secondary-color); color: white; }
+
+        .hint {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence { font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Fehlersuche: Possessivadjektive</h2>
+
+    <div class="instruction-box">
+        <strong>So funktioniert es:</strong> In jedem Satz hat sich ein grammatikalischer Fehler eingeschlichen (meist eine falsche Endung). 
+        Finden Sie das falsche Wort und <strong>klicken Sie es an</strong>, um es zu korrigieren.
+        <br><br>
+        <em>Hinweis: Keine Tastatur nötig!</em>
+    </div>
+
+    <div id="quiz-container"></div>
+</div>
+
+<script>
+const tasks = [
+    { id: 1, hint: "Akkusativ Feminin (-у statt -ую)", sentence: "Я вижу маминую сумку.", wrong: "маминую", right: "мамину" },
+    { id: 2, hint: "Akkusativ Feminin (-у statt -ую)", sentence: "Он читает папиную газету.", wrong: "папиную", right: "папину" },
+    { id: 3, hint: "Nachname im Präpositiv (-е statt -ом)", sentence: "Мы говориm о Пушкином.", wrong: "Пушкином", right: "Пушкине" },
+    { id: 4, hint: "Ortsname auf -о im Präpositiv (-е statt -ом)", sentence: "Я живу в Курицыном.", wrong: "Курицыном", right: "Курицыне" },
+    { id: 5, hint: "Nominativ Neutrum (-о statt -а)", sentence: "Это мамина фото.", wrong: "мамина", right: "мамино" },
+    { id: 6, hint: "Nominativ Maskulin (Suffix -ин-)", sentence: "Это маминый телефон.", wrong: "маминый", right: "мамин" },
+    { id: 7, hint: "Genitiv Maskulin (-ого statt -а)", sentence: "Здесь нет папина телефона.", wrong: "папина", right: "папиного" },
+    { id: 8, hint: "Akkusativ belebt (-ого statt -ин)", sentence: "Я вижу мамин брата.", wrong: "мамин", right: "маминого" },
+    { id: 9, hint: "Dativ Feminin (-ой statt -у)", sentence: "Я подхожу к мамину сумке.", wrong: "мамину", right: "маминой" },
+    { id: 10, hint: "Instrumental Maskulin (Nachname -ым statt -ом)", sentence: "Я сижу с Курицыном.", wrong: "Курицыном", right: "Курицыным" },
+    { id: 11, hint: "Dativ Maskulin (-ому statt -у)", sentence: "Я иду к папину другу.", wrong: "папину", right: "папиному" },
+    { id: 12, hint: "Akkusativ Feminin (-у statt -ой)", sentence: "Я люблю маминой сестру.", wrong: "маминой", right: "мамину" },
+    { id: 13, hint: "Plural Nominativ (-ы statt -ие)", sentence: "Это маминие очки.", wrong: "маминие", right: "мамины" },
+    { id: 14, hint: "Plural Genitiv (-ых statt -ы)", sentence: "У меня нет папины ключей.", wrong: "папины", right: "папиных" },
+    { id: 15, hint: "Präpositiv Feminin (-ой statt -е)", sentence: "В мамине комнате тепло.", wrong: "мамине", right: "маминой" },
+    { id: 16, hint: "Instrumental Feminin (-ой statt -у)", sentence: "Рядом mit мамину машиной.", wrong: "мамину", right: "маминой" },
+    { id: 17, hint: "Akkusativ unbelebt (Maskulin = Nominativ)", sentence: "Я взял папиного карандаш.", wrong: "папиного", right: "папин" },
+    { id: 18, hint: "Dativ Plural (-ым statt -ых)", sentence: "Я помогаю маминых друзьям.", wrong: "маминых", right: "маминым" },
+    { id: 19, hint: "Instrumental Plural (-ыми statt -ым)", sentence: "Я играю с маминым кошками.", wrong: "маминым", right: "мамиными" },
+    { id: 20, hint: "Nominativ Feminin (Stammendung)", sentence: "Это маминая книга.", wrong: "маминая", right: "мамина" }
+];
+
+function renderTasks() {
+    const container = document.getElementById('quiz-container');
+    tasks.forEach(task => {
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        card.id = `card-${task.id}`;
+
+        const wordsHtml = task.sentence.split(' ').map((word, index) => {
+            const cleanWord = word.replace(/[.,!]/g, "");
+            const isTarget = cleanWord === task.wrong;
+            return `<span class="word" onclick="handleWordClick(${task.id}, this, ${isTarget})">${word}</span>`;
+        }).join(' ');
+
+        card.innerHTML = `
+            <div class="hint">Hinweis: ${task.hint}</div>
+            <div class="sentence" id="sentence-${task.id}">${wordsHtml}</div>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetTask(${task.id})">Zurücksetzen</button>
+                <button class="btn-solution" onclick="showSolution(${task.id})">Lösung anzeigen</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function handleWordClick(taskId, element, isTarget) {
+    if (element.classList.contains('error-found')) return;
+
+    if (isTarget) {
+        const task = tasks.find(t => t.id === taskId);
+        // Korrigiere das Wort (behalte Satzzeichen bei)
+        const originalText = element.innerText;
+        element.innerText = originalText.replace(task.wrong, task.right);
+        element.classList.add('error-found');
+        element.classList.remove('wrong-click');
+    } else {
+        element.classList.add('wrong-click');
+        setTimeout(() => element.classList.remove('wrong-click'), 400);
+    }
+}
+
+function resetTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    const card = document.getElementById(`card-${taskId}`);
+    const sentenceDiv = document.getElementById(`sentence-${taskId}`);
+    
+    // Einfach neu rendern für diesen Satz
+    const wordsHtml = task.sentence.split(' ').map((word, index) => {
+        const cleanWord = word.replace(/[.,!]/g, "");
+        const isTarget = cleanWord === task.wrong;
+        return `<span class="word" onclick="handleWordClick(${task.id}, this, ${isTarget})">${word}</span>`;
+    }).join(' ');
+    
+    sentenceDiv.innerHTML = wordsHtml;
+}
+
+function showSolution(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    const sentenceDiv = document.getElementById(`sentence-${taskId}`);
+    const words = sentenceDiv.getElementsByClassName('word');
+    
+    for (let wordEl of words) {
+        const cleanWord = wordEl.innerText.replace(/[.,!]/g, "");
+        if (cleanWord === task.wrong) {
+            handleWordClick(taskId, wordEl, true);
+        }
+    }
+}
+
+window.onload = renderTasks;
+</script>
+
+</body>
+</html>
