@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bild-Zuordnung: Wem gehört was?</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 { text-align: center; color: var(--primary-color); }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 15px;
+            border-left: 6px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 8px;
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .task-card {
+            border: 1px solid #e1e8ed;
+            padding: 15px;
+            border-radius: 12px;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .visual-pair {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid #eee;
+        }
+
+        .icon-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .icon { font-size: 2.5rem; }
+        .label { font-size: 0.8rem; font-weight: bold; color: #7f8c8d; text-transform: uppercase; }
+
+        .plus { font-size: 1.5rem; font-weight: bold; color: var(--secondary-color); }
+
+        .sentence-row {
+            width: 100%;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        select {
+            padding: 6px 10px;
+            border: 2px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select.correct {
+            border-color: var(--success-color);
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        select.incorrect {
+            border-color: var(--error-color);
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background: #95a5a6; color: white; }
+        .btn-sol { background: var(--secondary-color); color: white; }
+
+        @media (max-width: 768px) {
+            .quiz-grid { grid-template-columns: 1fr; }
+            .container { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Bild-Zuordnung: Wem gehört was?</h2>
+
+    <div class="instruction-box">
+        <strong>Aufgabe:</strong> Schauen Sie sich das Besitzer-Objekt-Paar an und vervollständigen Sie den Satz. 
+        Achten Sie besonders auf den Fall (Akkusativ oder Nominativ) und das Geschlecht.
+        <br><br>
+        <em>Beispiel: 👩 (Mama) + 👜 (Tasche) = „Это мамина сумка.“</em>
+    </div>
+
+    <div id="quiz-container" class="quiz-grid"></div>
+</div>
+
+<script>
+const tasks = [
+    { id: 1, owner: "👩", ownerName: "Мама", obj: "👜", objName: "Сумка", sentence: "Это [ANS] сумка.", options: ["мамин", "мамина", "мамино"], correct: "мамина" },
+    { id: 2, owner: "👨", ownerName: "Папа", obj: "📱", objName: "Телефон", sentence: "Это [ANS] телефон.", options: ["папин", "папина", "папино"], correct: "папин" },
+    { id: 3, owner: "👦", ownerName: "Саша", obj: "🚗", objName: "Машина", sentence: "Это [ANS] машина.", options: ["Сашин", "Сашина", "Сашино"], correct: "Сашина" },
+    { id: 4, owner: "👵", ownerName: "Бабушка", obj: "👓", objName: "Очки", sentence: "Это [ANS] очки.", options: ["бабушкин", "бабушкины", "бабушкино"], correct: "бабушкины" },
+    { id: 5, owner: "👴", ownerName: "Дедушка", obj: "📰", objName: "Газета", sentence: "Это [ANS] газета.", options: ["дедушкин", "дедушкина", "дедушкино"], correct: "дедушкина" },
+    { id: 6, owner: "👩", ownerName: "Мама", obj: "👜", objName: "Сумка", sentence: "Я вижу [ANS] сумку.", options: ["мамину", "маминую", "маминой"], correct: "мамину" },
+    { id: 7, owner: "👨", ownerName: "Папа", obj: "🚗", objName: "Машина", sentence: "Я вижу [ANS] машину.", options: ["папину", "папиную", "папина"], correct: "папину" },
+    { id: 8, owner: "👦", ownerName: "Саша", obj: "🖼️", objName: "Фото", sentence: "Это [ANS] фото.", options: ["Сашин", "Сашина", "Сашино"], correct: "Сашино" },
+    { id: 9, owner: "👵", ownerName: "Бабушка", obj: "🐱", objName: "Кошка", sentence: "Это [ANS] кошка.", options: ["бабушкин", "бабушкина", "бабушкино"], correct: "бабушкина" },
+    { id: 10, owner: "👨", ownerName: "Папа", obj: "🐕", objName: "Собака", sentence: "Я вижу [ANS] собаку.", options: ["папину", "папиную", "папина"], correct: "папину" },
+    { id: 11, owner: "👩", ownerName: "Мама", obj: "👠", objName: "Туфли", sentence: "Это [ANS] туфли.", options: ["мамин", "мамина", "мамины"], correct: "мамины" },
+    { id: 12, owner: "👦", ownerName: "Саша", obj: "🖊️", objName: "Ручка", sentence: "Это [ANS] ручка.", options: ["Сашин", "Сашина", "Сашино"], correct: "Сашина" },
+    { id: 13, owner: "🐔", ownerName: "Курица", obj: "🥚", objName: "Яйцо", sentence: "Это [ANS] яйцо.", options: ["курицин", "курицыно", "курицына"], correct: "курицыно" },
+    { id: 14, owner: "🦊", ownerName: "Лисица", obj: "🦊", objName: "Хвост", sentence: "Это [ANS] хвост.", options: ["лисицин", "лисицын", "лисицына"], correct: "лисицын" },
+    { id: 15, owner: "👩", ownerName: "Мама", obj: "👗", objName: "Платье", sentence: "Это [ANS] платье.", options: ["мамин", "мамина", "мамино"], correct: "мамино" },
+    { id: 16, owner: "👨", ownerName: "Папа", obj: "🧔", objName: "Друг", sentence: "Я вижу [ANS] друга.", options: ["папин", "папиного", "папиному"], correct: "папиного" },
+    { id: 17, owner: "👦", ownerName: "Саша", obj: "👧", objName: "Сестра", sentence: "Я вижу [ANS] сестру.", options: ["Сашину", "Сашиной", "Сашина"], correct: "Сашину" },
+    { id: 18, owner: "👩", ownerName: "Мама", obj: "👴👵", objName: "Родители", sentence: "Я вижу [ANS] родителей.", options: ["мамины", "маминых", "маминым"], correct: "маминых" },
+    { id: 19, owner: "👵", ownerName: "Бабушка", obj: "✉️", objName: "Письмо", sentence: "Это [ANS] письмо.", options: ["бабушкин", "бабушкина", "бабушкино"], correct: "бабушкино" },
+    { id: 20, owner: "👴", ownerName: "Дедушка", obj: "🌳", objName: "Сад", sentence: "Это [ANS] сад.", options: ["дедушкин", "дедушкина", "дедушкино"], correct: "дедушкин" }
+];
+
+function renderTasks() {
+    const container = document.getElementById('quiz-container');
+    tasks.forEach(t => {
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        
+        const parts = t.sentence.split('[ANS]');
+        
+        card.innerHTML = `
+            <div class="visual-pair">
+                <div class="icon-box">
+                    <span class="icon">${t.owner}</span>
+                    <span class="label">${t.ownerName}</span>
+                </div>
+                <span class="plus">+</span>
+                <div class="icon-box">
+                    <span class="icon">${t.obj}</span>
+                    <span class="label">${t.objName}</span>
+                </div>
+            </div>
+            <div class="sentence-row">
+                ${parts[0]}
+                <select id="sel-${t.id}" onchange="validate(${t.id}, this.value)">
+                    <option value="">-- ? --</option>
+                    ${t.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                </select>
+                ${parts[1]}
+            </div>
+            <div class="button-group">
+                <button class="btn-reset" onclick="resetTask(${t.id})">Zurücksetzen</button>
+                <button class="btn-sol" onclick="showSol(${t.id})">Lösung</button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function validate(id, val) {
+    const sel = document.getElementById(`sel-${id}`);
+    const correct = tasks.find(t => t.id === id).correct;
+    
+    if(!val) {
+        sel.className = "";
+        return;
+    }
+    
+    if(val === correct) {
+        sel.className = "correct";
+    } else {
+        sel.className = "incorrect";
+    }
+}
+
+function resetTask(id) {
+    const sel = document.getElementById(`sel-${id}`);
+    sel.value = "";
+    sel.className = "";
+}
+
+function showSol(id) {
+    const sel = document.getElementById(`sel-${id}`);
+    const correct = tasks.find(t => t.id === id).correct;
+    sel.value = correct;
+    sel.className = "correct";
+}
+
+window.onload = renderTasks;
+</script>
+
+</body>
+</html>
