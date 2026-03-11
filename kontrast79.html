@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontrast-Übung: Possessiv- vs. Qualitätsadjektive</title>
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 { text-align: center; color: var(--primary-color); }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 20px;
+            border-left: 6px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 6px;
+        }
+
+        .rule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .rule-table td, .rule-table th {
+            border: 1px solid #abd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .task-card {
+            border: 1px solid #e1e8ed;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        .task-header {
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .sentence-row {
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 170px;
+        }
+
+        select.correct {
+            border-color: var(--success-color) !important;
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        select.incorrect {
+            border-color: var(--error-color) !important;
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background: #95a5a6; color: white; }
+        .btn-sol { background: var(--secondary-color); color: white; }
+
+        .type-hint {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #eee;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .sentence-row { font-size: 1.1em; }
+            select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Kontrast: Possessiv- vs. Qualitätsadjektive</h2>
+
+    <div class="instruction-box">
+        <strong>Grammatik-Hinweis:</strong>
+        <table class="rule-table">
+            <tr>
+                <th>Adjektiv-Typ</th>
+                <th>Akkusativ Feminin</th>
+                <th>Präpositiv Maskulin</th>
+            </tr>
+            <tr>
+                <td><strong>Possessiv (-ИН/-ЫН)</strong></td>
+                <td>Endung <strong>-у</strong> (мамину)</td>
+                <td>Nachname: <strong>-е</strong> (о Пушкине)</td>
+            </tr>
+            <tr>
+                <td><strong>Qualität (Standard)</strong></td>
+                <td>Endung <strong>-ую</strong> (новую)</td>
+                <td>Standard: <strong>-ом</strong> (о новом)</td>
+            </tr>
+        </table>
+        <br>
+        <em>Wähle die richtige Form. Die Antwortmöglichkeiten sind in jedem Satz gemischt!</em>
+    </div>
+
+    <div id="quiz-list"></div>
+</div>
+
+<script>
+// Aufgaben-Daten
+const tasks = [
+    { id: 1, type: "Possessiv", sentence: "Я вижу [ANS] сумку.", options: ["мамину", "маминую", "маминой"], correct: "мамину" },
+    { id: 2, type: "Qualität", sentence: "Я вижу [ANS] сумку.", options: ["новую", "нову", "новою"], correct: "новую" },
+    { id: 3, type: "Possessiv", sentence: "Мы читаем [ANS] газету.", options: ["папину", "папиную", "папина"], correct: "папину" },
+    { id: 4, type: "Qualität", sentence: "Мы читаем [ANS] газету.", options: ["интересную", "интересну", "интересной"], correct: "интересную" },
+    { id: 5, type: "Possessiv", sentence: "Ты знаешь [ANS] сестру?", options: ["Сашину", "Сашиную", "Сашина"], correct: "Сашину" },
+    { id: 6, type: "Qualität", sentence: "Ты знаешь [ANS] сестру?", options: ["старшую", "старшу", "старшей"], correct: "старшую" },
+    { id: 7, type: "Possessiv", sentence: "Он купил [ANS] машину.", options: ["бабушкину", "бабушкиную", "бабушкиной"], correct: "бабушкиnu" }, // Hinweis: Korrektur zu kyrillisch
+    { id: 8, type: "Qualität", sentence: "Он купил [ANS] машину.", options: ["дорогую", "дорогу", "дорогой"], correct: "дорогую" },
+    { id: 9, type: "Possessiv", sentence: "Я люблю [ANS] еду.", options: ["мамину", "маминую", "маминой"], correct: "мамину" },
+    { id: 10, type: "Qualität", sentence: "Я люблю [ANS] еду.", options: ["русскую", "русску", "русской"], correct: "русскую" },
+    { id: 11, type: "Possessiv", sentence: "Мы говорим о [ANS] телефоне.", options: ["мамином", "мамине", "маминым"], correct: "мамином" },
+    { id: 12, type: "Qualität", sentence: "Мы говориm о [ANS] телефоне.", options: ["новом", "нове", "новым"], correct: "новом" },
+    { id: 13, type: "Nachname", sentence: "Я читаю о [ANS].", options: ["Пушкине", "Пушкином", "Пушкина"], correct: "Пушкине" },
+    { id: 14, type: "Qualität", sentence: "Я читаю о [ANS] поэте.", options: ["великом", "велике", "великим"], correct: "великом" },
+    { id: 15, type: "Possessiv", sentence: "Я иду к [ANS] комнате.", options: ["папиной", "папину", "папина"], correct: "папиной" },
+    { id: 16, type: "Qualität", sentence: "Я иду к [ANS] комнате.", options: ["большой", "большую", "большая"], correct: "большой" },
+    { id: 17, type: "Possessiv", sentence: "Это сделано [ANS] руками.", options: ["мамиными", "маминым", "маминых"], correct: "мамиными" },
+    { id: 18, type: "Qualität", sentence: "Это сделано [ANS] руками.", options: ["добрыми", "добрым", "добрых"], correct: "добрыми" },
+    { id: 19, type: "Possessiv", sentence: "Я вижу [ANS] платье.", options: ["мамино", "маминое", "мамину"], correct: "мамино" },
+    { id: 20, type: "Qualität", sentence: "Я вижу [ANS] платье.", options: ["красивое", "красиво", "красивую"], correct: "красивое" }
+];
+
+// Hilfsfunktion zum Mischen
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Rendering der Aufgaben
+function render() {
+    const list = document.getElementById('quiz-list');
+    tasks.forEach(t => {
+        // Korrektur: Wir stellen sicher, dass "correct" kyrillisch ist
+        if(t.correct === "бабушкиnu") t.correct = "бабушкину";
+        
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        
+        const parts = t.sentence.split('[ANS]');
+        const shuffledOptions = shuffle([...t.options]);
+        
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="task-header">Aufgabe ${t.id}</span>
+                <span class="type-hint">${t.type}</span>
+            </div>
+            <div class="sentence-row">
+                ${parts[0]}
+                <select id="sel-${t.id}" onchange="validate(${t.id}, this.value)">
+                    <option value="">-- wählen --</option>
+                    ${shuffledOptions.map(o => `<option value="${o}">${o}</option>`).join('')}
+                </select>
+                ${parts[1]}
+            </div>
+            <div class="btn-group">
+                <button class="btn-reset" onclick="resetTask(${t.id})">Zurücksetzen</button>
+                <button class="btn-sol" onclick="showSolution(${t.id})">Lösung anzeigen</button>
+            </div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+// Validierung (Direkt-Feedback)
+function validate(id, val) {
+    const sel = document.getElementById(`sel-${id}`);
+    const correct = tasks.find(t => t.id === id).correct;
+    
+    if (!val) {
+        sel.className = "";
+        return;
+    }
+    
+    if (val === correct) {
+        sel.className = "correct";
+    } else {
+        sel.className = "incorrect";
+    }
+}
+
+// Reset
+function resetTask(id) {
+    const sel = document.getElementById(`sel-${id}`);
+    sel.value = "";
+    sel.className = "";
+}
+
+// Lösung anzeigen
+function showSolution(id) {
+    const sel = document.getElementById(`sel-${id}`);
+    const correct = tasks.find(t => t.id === id).correct;
+    sel.value = correct;
+    sel.className = "correct";
+}
+
+window.onload = render;
+</script>
+
+</body>
+</html>
