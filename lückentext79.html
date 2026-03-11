@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lückentext-Geschichte: Die Familie zu Besuch</title>
+    <!-- Polyfill für Touch-Geräte -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.8;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 { text-align: center; color: var(--primary-color); }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 20px;
+            border-left: 6px solid var(--secondary-color);
+            margin-bottom: 30px;
+            border-radius: 6px;
+        }
+
+        .story-container {
+            background: #fff;
+            padding: 25px;
+            border: 1px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            font-size: 1.2rem;
+            text-align: justify;
+        }
+
+        /* Styling für die Lücken */
+        .gap-container {
+            display: inline-block;
+            white-space: nowrap;
+            margin: 0 2px;
+        }
+
+        .stem {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        select {
+            padding: 2px 5px;
+            border: 2px solid #cbd5e0;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        select.correct {
+            border-color: var(--success-color) !important;
+            background-color: #d4edda !important;
+            color: #155724 !important;
+        }
+
+        select.incorrect {
+            border-color: var(--error-color) !important;
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+        }
+
+        /* Buttons */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-reset { background: #95a5a6; color: white; }
+        .btn-solution { background: var(--secondary-color); color: white; }
+        button:hover { opacity: 0.8; }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .story-container { font-size: 1.1rem; padding: 15px; }
+            select { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Lückentext-Geschichte: Ein Tag bei der Familie</h2>
+
+    <div class="instruction-box">
+        <strong>Aufgabe:</strong> Lesen Sie die Geschichte. Der Wortstamm ist vorgegeben. 
+        Wählen Sie für jede Lücke die <strong>korrekte Endung</strong> aus. 
+        Achten Sie besonders auf den Akkusativ Feminin (Endung <strong>-у</strong>!).
+        Feedback erfolgt sofort beim Klicken.
+    </div>
+
+    <div class="story-container" id="story">
+        „Сегодня суббота. Мы дома. Это наша гостиная. На столе лежит 
+        <span class="gap-container"><span class="stem">папин</span><select id="gap-1"></select></span> журнал. 
+        Рядом я вижу <span class="gap-container"><span class="stem">мамин</span><select id="gap-2"></select></span> сумку. 
+        Мама ищет свою <span class="gap-container"><span class="stem">сестрин</span><select id="gap-3"></select></span> тетрадь. 
+        В <span class="gap-container"><span class="stem">папин</span><select id="gap-4"></select></span> кабинете тихо. 
+        Мы готовим обед и ждём <span class="gap-container"><span class="stem">бабушкин</span><select id="gap-5"></select></span> гостей. 
+        У окна стоит <span class="gap-container"><span class="stem">бабушкин</span><select id="gap-6"></select></span> кресло. 
+        Я играю с <span class="gap-container"><span class="stem">Сашин</span><select id="gap-7"></select></span> собакой. 
+        Мы говорим о <span class="gap-container"><span class="stem">дедушкин</span><select id="gap-8"></select></span> саде. 
+        Мама надела <span class="gap-container"><span class="stem">бабушкин</span><select id="gap-9"></select></span> кольцо. 
+        А где <span class="gap-container"><span class="stem">папин</span><select id="gap-10"></select></span> очки? 
+        Они лежат в <span class="gap-container"><span class="stem">мамин</span><select id="gap-11"></select></span> комнате. 
+        Я очень люблю <span class="gap-container"><span class="stem">бабушкин</span><select id="gap-12"></select></span> пироги. 
+        Папа подошёл к <span class="gap-container"><span class="stem">мамин</span><select id="gap-13"></select></span> машине. 
+        Он доволен <span class="gap-container"><span class="stem">папин</span><select id="gap-14"></select></span> подарком. 
+        Мы смотрим на <span class="gap-container"><span class="stem">сестрин</span><select id="gap-15"></select></span> фото (Neutrum). 
+        Я вижу <span class="gap-container"><span class="stem">маминого</span><select id="gap-16"></select></span> брата. 
+        Мы пойдём к <span class="gap-container"><span class="stem">бабушкин</span><select id="gap-17"></select></span> дому. 
+        Сегодня нет <span class="gap-container"><span class="stem">папин</span><select id="gap-18"></select></span> машины. 
+        Мы сидим в <span class="gap-container"><span class="stem">мамин</span><select id="gap-19"></select></span> платье (Sinn: Ich trage es). 
+        Это <span class="gap-container"><span class="stem">Сашин</span><select id="gap-20"></select></span> книга.“
+    </div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="resetStory()">Zurücksetzen</button>
+        <button class="btn-solution" onclick="showSolution()">Lösungen anzeigen</button>
+    </div>
+</div>
+
+<script>
+const gapsData = {
+    "gap-1": { correct: "", opts: ["", "а", "о"], hint: "Nom. Masc." }, // Endung leer für папин
+    "gap-2": { correct: "у", opts: ["у", "ую", "ой"], hint: "Akk. Fem." },
+    "gap-3": { correct: "у", opts: ["у", "ой", "а"], hint: "Akk. Fem." },
+    "gap-4": { correct: "ом", opts: ["ом", "е", "ым"], hint: "Prep. Masc." },
+    "gap-5": { correct: "ых", opts: ["ых", "ы", "ым"], hint: "Gen. Plur." },
+    "gap-6": { correct: "о", opts: ["о", "а", "е"], hint: "Nom. Neut." },
+    "gap-7": { correct: "ой", opts: ["ой", "у", "ой"], hint: "Instr. Fem." },
+    "gap-8": { correct: "ом", opts: ["ом", "е", "ым"], hint: "Prep. Masc." },
+    "gap-9": { correct: "о", opts: ["о", "а", "у"], hint: "Akk. Neut." },
+    "gap-10": { correct: "ы", opts: ["ы", "ых", "ым"], hint: "Nom. Plur." },
+    "gap-11": { correct: "ой", opts: ["ой", "е", "у"], hint: "Prep. Fem." },
+    "gap-12": { correct: "ы", opts: ["ы", "ых", "ым"], hint: "Akk. Plur." },
+    "gap-13": { correct: "ой", opts: ["ой", "е", "у"], hint: "Dat. Fem." },
+    "gap-14": { correct: "ым", opts: ["ым", "ом", "ого"], hint: "Instr. Masc." },
+    "gap-15": { correct: "о", opts: ["о", "а", "у"], hint: "Akk. Neut." },
+    "gap-16": { correct: "", opts: ["", "а", "у"], hint: "Der Stamm ist schon маминого" }, // Hier ist der Stamm 'маминого'
+    "gap-17": { correct: "ому", opts: ["ому", "ом", "ым"], hint: "Dat. Masc." },
+    "gap-18": { correct: "ой", opts: ["ой", "а", "ы"], hint: "Gen. Fem." },
+    "gap-19": { correct: "ом", opts: ["ом", "е", "ым"], hint: "Prep. Neut." },
+    "gap-20": { correct: "а", opts: ["а", "у", "ой"], hint: "Nom. Fem." }
+};
+
+// Hilfsfunktion zum Mischen
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function init() {
+    for (let id in gapsData) {
+        const select = document.getElementById(id);
+        const data = gapsData[id];
+        
+        // Placeholder
+        const placeholder = document.createElement('option');
+        placeholder.value = "none";
+        placeholder.innerText = "...";
+        select.appendChild(placeholder);
+
+        // Optionen mischen (und leere Endung als "" anzeigen)
+        const uniqueOpts = [...new Set(data.opts)];
+        shuffle(uniqueOpts).forEach(opt => {
+            const o = document.createElement('option');
+            o.value = opt;
+            o.innerText = opt === "" ? "- (leer)" : opt;
+            select.appendChild(o);
+        });
+
+        select.onchange = () => {
+            if (select.value === "none") {
+                select.className = "";
+            } else if (select.value === data.correct) {
+                select.className = "correct";
+            } else {
+                select.className = "incorrect";
+            }
+        };
+    }
+}
+
+function resetStory() {
+    for (let id in gapsData) {
+        const select = document.getElementById(id);
+        select.value = "none";
+        select.className = "";
+    }
+}
+
+function showSolution() {
+    for (let id in gapsData) {
+        const select = document.getElementById(id);
+        select.value = gapsData[id].correct;
+        select.className = "correct";
+    }
+}
+
+window.onload = init;
+</script>
+
+</body>
+</html>
