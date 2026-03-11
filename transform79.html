@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arbeitsblatt: Transformation zu Possessivadjektiven</title>
+    <!-- Polyfill für Drag & Drop auf Touch-Geräten -->
+    <script src="https://cdn.jsdelivr.net/npm/drag-drop-touch@1.3.1/DragDropTouch.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: var(--card-bg);
+            padding: 30px 40px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h1 { text-align: center; color: var(--primary-color); margin-bottom: 5px; }
+        h2 { text-align: center; color: var(--secondary-color); font-weight: 300; margin-top: 0; margin-bottom: 30px; }
+
+        .instruction-box {
+            background: #eef7fd;
+            padding: 20px;
+            border-left: 6px solid var(--secondary-color);
+            margin-bottom: 35px;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .task-card {
+            background: #fff;
+            border: 1px solid #e1e8ed;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: var(--border-radius);
+            transition: transform 0.2s ease;
+        }
+
+        .transformation-label {
+            display: block;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .sentence-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 1.25em;
+            margin: 15px 0;
+        }
+
+        /* Interaktive Elemente */
+        select, .drop-zone {
+            padding: 10px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 170px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .drop-zone {
+            display: inline-block;
+            min-height: 30px;
+            border-style: dashed;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 30px;
+            background-color: #fafafa;
+        }
+
+        .drag-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .drag-item {
+            padding: 8px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 6px;
+            cursor: grab;
+            font-size: 1rem;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Feedback Zustände */
+        .correct {
+            background-color: #d4edda !important;
+            border-color: var(--success-color) !important;
+            color: #155724 !important;
+        }
+
+        .incorrect {
+            background-color: #f8d7da !important;
+            border-color: var(--error-color) !important;
+            color: #721c24 !important;
+        }
+
+        /* Buttons */
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background 0.2s;
+        }
+
+        .btn-reset { background: #95a5a6; color: #fff; }
+        .btn-sol { background: var(--secondary-color); color: #fff; }
+        button:hover { opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .sentence-row { font-size: 1.15em; flex-direction: column; align-items: flex-start; }
+            select, .drop-zone { width: 100%; box-sizing: border-box; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Russisch Arbeitsblatt</h1>
+    <h2>Interaktive Transformation: Genitiv → Possessivadjektiv</h2>
+
+    <div class="instruction-box">
+        <strong>Aufgabe:</strong> Wandeln Sie die Konstruktion mit Genitiv (z. B. <em>книга мамы</em>) in einen Ausdruck mit einem Possessivadjektiv (<em>мамина книга</em>) um. 
+        Wählen Sie das richtige Wort aus. Das Feedback erfolgt sofort: <span style="color:var(--success-color)">Grün</span> für richtig, <span style="color:var(--error-color)">Rot</span> für falsch.
+    </div>
+
+    <div id="exercise-list"></div>
+</div>
+
+<script>
+const data = [
+    // Nominativ
+    { id: 1, type: 'dropdown', label: 'книга мамы', sentence: 'Это [ANS] книга.', options: ['мамин', 'мамина', 'мамино'], correct: 'мамина' },
+    { id: 2, type: 'dropdown', label: 'телефон папы', sentence: 'Это [ANS] телефон.', options: ['папин', 'папина', 'папино'], correct: 'папин' },
+    { id: 3, type: 'dropdown', label: 'фото сестры', sentence: 'Это [ANS] фото.', options: ['сестрин', 'сестрина', 'сестрино'], correct: 'сестрино' },
+    { id: 4, type: 'drag', label: 'очки дедушки', sentence: 'Это [ZONE] очки.', items: ['дедушкин', 'дедушкины', 'дедушкино'], correct: 'дедушкины' },
+    { id: 5, type: 'drag', label: 'дом бабушки', sentence: 'Это [ZONE] дом.', items: ['бабушкин', 'бабушкина', 'бабушкины'], correct: 'бабушкин' },
+
+    // Akkusativ (Sonderform Feminin: -у statt -ую)
+    { id: 6, type: 'dropdown', label: 'вижу сумку мамы', sentence: 'Я вижу [ANS] сумку.', options: ['мамину', 'маминую', 'маминой'], correct: 'мамину' },
+    { id: 7, type: 'dropdown', label: 'читаю газету папы', sentence: 'Я читаю [ANS] газету.', options: ['папину', 'папиную', 'папина'], correct: 'папину' },
+    { id: 8, type: 'drag', label: 'знаю брата Саши (belebt)', sentence: 'Я знаю [ZONE] брата.', items: ['Сашин', 'Сашиного', 'Сашиному'], correct: 'Сашиного' },
+    { id: 9, type: 'dropdown', label: 'беру карандаш дедушки (unbelebt)', sentence: 'Я беру [ANS] карандаш.', options: ['дедушкин', 'дедушкиного', 'дедушкиным'], correct: 'дедушкин' },
+
+    // Genitiv
+    { id: 10, type: 'dropdown', label: 'нет телефона папы', sentence: 'Здесь нет [ANS] телефона.', options: ['папин', 'папиного', 'папиным'], correct: 'папиного' },
+    { id: 11, type: 'drag', label: 'у двери комнаты мамы', sentence: 'Я у [ZONE] комнаты.', items: ['мамина', 'маминой', 'мамину'], correct: 'маминой' },
+
+    // Dativ
+    { id: 12, type: 'dropdown', label: 'иду к платью мамы', sentence: 'Я подхожу к [ANS] платью.', options: ['маминому', 'маминой', 'маминым'], correct: 'маминому' },
+    { id: 13, type: 'drag', label: 'помогаю сестре Саши', sentence: 'Я помогаю [ZONE] сестре.', items: ['Сашину', 'Сашиной', 'Сашина'], correct: 'Сашиной' },
+
+    // Instrumental
+    { id: 14, type: 'dropdown', label: 'доволен работой сестры', sentence: 'Я доволен [ANS] работой.', options: ['сестриной', 'сестрину', 'сестрина'], correct: 'сестриной' },
+    { id: 15, type: 'drag', label: 'пишу карандашом папы', sentence: 'Я пишу [ZONE] карандашом.', items: ['папиным', 'папиного', 'папину'], correct: 'папиным' },
+
+    // Präpositiv
+    { id: 16, type: 'dropdown', label: 'думаю о книге мамы', sentence: 'Я думаю о [ANS] книге.', options: ['маминой', 'мамину', 'мамина'], correct: 'маминой' },
+    { id: 17, type: 'drag', label: 'в комнате папы', sentence: 'В [ZONE] комнате тихо.', items: ['папину', 'папиной', 'папина'], correct: 'папиной' },
+
+    // Plural Formen
+    { id: 18, type: 'dropdown', label: 'вещи мамы', sentence: 'Это [ANS] вещи.', options: ['мамины', 'маминых', 'маминым'], correct: 'мамины' },
+    { id: 19, type: 'drag', label: 'игрушки Саши', sentence: 'Где [ZONE] игрушки?', items: ['Сашины', 'Сашиных', 'Сашиными'], correct: 'Сашины' },
+    { id: 20, type: 'dropdown', label: 'друзьям мамы', sentence: 'Я помогаю [ANS] друзьям.', options: ['мамины', 'маминых', 'маминым'], correct: 'маминым' }
+];
+
+function renderExercises() {
+    const list = document.getElementById('exercise-list');
+    data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        
+        let html = `<span class="transformation-label">Transformation: ${item.label}</span>`;
+        
+        if(item.type === 'dropdown') {
+            const parts = item.sentence.split('[ANS]');
+            html += `<div class="sentence-row">
+                ${parts[0]}
+                <select id="field-${item.id}" onchange="validate(${item.id}, this.value)">
+                    <option value="">--?--</option>
+                    ${item.options.map(o => `<option value="${o}">${o}</option>`).join('')}
+                </select>
+                ${parts[1]}
+            </div>`;
+        } else {
+            const parts = item.sentence.split('[ZONE]');
+            html += `
+                <div class="drag-container">
+                    ${item.items.map(txt => `<div class="drag-item" draggable="true" ondragstart="handleDragStart(event)" id="drag-${item.id}-${txt}">${txt}</div>`).join('')}
+                </div>
+                <div class="sentence-row">
+                    ${parts[0]}
+                    <div class="drop-zone" id="field-${item.id}" ondrop="handleDrop(event, ${item.id})" ondragover="handleDragOver(event)"></div>
+                    ${parts[1]}
+                </div>`;
+        }
+
+        html += `<div class="button-row">
+            <button class="btn-reset" onclick="resetTask(${item.id})">Zurücksetzen</button>
+            <button class="btn-sol" onclick="showSolution(${item.id})">Lösung anzeigen</button>
+        </div>`;
+        
+        card.innerHTML = html;
+        list.appendChild(card);
+    });
+}
+
+// Validierung & Logik
+function validate(id, value) {
+    const field = document.getElementById(`field-${id}`);
+    const correctValue = data.find(x => x.id === id).correct;
+    
+    if(!value || value === "") {
+        field.classList.remove('correct', 'incorrect');
+        return;
+    }
+
+    // Exakter Vergleich (kyrillisch zu kyrillisch)
+    if(value.trim() === correctValue) {
+        field.classList.add('correct');
+        field.classList.remove('incorrect');
+    } else {
+        field.classList.add('incorrect');
+        field.classList.remove('correct');
+    }
+}
+
+// Drag & Drop Handlers
+function handleDragStart(ev) {
+    ev.dataTransfer.setData("text/plain", ev.target.innerText);
+}
+
+function handleDragOver(ev) {
+    ev.preventDefault();
+}
+
+function handleDrop(ev, id) {
+    ev.preventDefault();
+    const txt = ev.dataTransfer.getData("text/plain");
+    ev.target.innerText = txt;
+    validate(id, txt);
+}
+
+// Button Funktionen
+function resetTask(id) {
+    const field = document.getElementById(`field-${id}`);
+    const item = data.find(x => x.id === id);
+    field.classList.remove('correct', 'incorrect');
+    if(item.type === 'dropdown') {
+        field.value = "";
+    } else {
+        field.innerText = "";
+    }
+}
+
+function showSolution(id) {
+    const field = document.getElementById(`field-${id}`);
+    const item = data.find(x => x.id === id);
+    const sol = item.correct;
+    
+    if(item.type === 'dropdown') {
+        field.value = sol;
+    } else {
+        field.innerText = sol;
+    }
+    validate(id, sol);
+}
+
+// Initialisierung beim Laden
+window.onload = renderExercises;
+</script>
+
+</body>
+</html>
